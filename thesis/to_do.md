@@ -17,6 +17,7 @@
 8. Check if i can visually classify abandoned buildings
 9. Write a calcificatior
 10. Write small summary about this
+11. Rewrite introduction
 
 ---
 

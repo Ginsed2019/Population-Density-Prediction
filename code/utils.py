@@ -3,6 +3,7 @@ import numpy as np
 import io
 import matplotlib.pyplot as plt
 import pandas
+import inflection
 
 def mask_s2_clouds(image):
   """Masks clouds in a Sentinel-2 image using the QA band.
@@ -77,11 +78,27 @@ def np_normalize(np_image):
     np_image = np_image / np_image.max()
     return np_image
 
-def np_image_show(np_image, normalize = True):
+def np_image_show(np_image, normalize = True, title = None, width_cm = 8, name = None):
     if normalize: np_image = np_normalize(np_image)
+    aspect_ratio = np_image.shape[0] / np_image.shape[1]
+    if width_cm:
+        # Convert cm to inches (1 inch = 2.54 cm)
+        width_inches = width_cm / 2.54
+        height_inches = width_inches * aspect_ratio
+        plt.figure(figsize=(width_inches, height_inches))
+    else:
+        plt.figure()
     plt.imshow(np_image)
-    plt.title(f'Image of size: {np_image.shape}')
+    plt.title(title if title else f'Image of size: {np_image.shape}')
+    plt.axis('off')
+    
+    if name:
+        None
+        #plt.imsave(f"../plots/raw_{name}.png", np_image)
+        #plt.savefig(f"../plots/plt_{name}.png")
+        
     plt.show()
+    return None
 
 if False:
     gyv = pandas.read_csv('../data/Gyventou_surasymas_2021_(GRID_1km).csv')

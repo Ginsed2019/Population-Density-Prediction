@@ -76,11 +76,13 @@ class ImageGetter:
         return popPoints, popPoints_bands
     
     def get_geoportal(self, lon, lat, period, diameter, resolution):
+        # https://www.geoportal.lt/map/
         res = get_geoportal_lt_map(lat, lon, diameter, resolution, period)
         return res, ["R", "G", "B"]
         
     
 if False:
+    plt_width = 20
     if True:
         lon = 25.279652
         lat = 54.687157
@@ -88,6 +90,7 @@ if False:
         to_date = '2021-09-29'
         diameter = 20000
         scale = 132.29
+        name = "Vilnius"
     if False:
         lon = 21.4645
         lat = 55.4642
@@ -95,6 +98,8 @@ if False:
         to_date = '2021-09-29'
         diameter = 500
         scale = 2.64
+    resol_text = f"\nResolution: {scale} $m^2$ per pixel"
+    perio_text = f"\nPeriod: from {from_date} to {to_date}"
     
     ig = ImageGetter()
     sentinel_2_img, sentinel_2_bands = ig.get_gee_sentinel_2(lon, lat, from_date, to_date, diameter, scale)
@@ -102,30 +107,30 @@ if False:
     vilnius_pop_den, vilnius_pop_den_bands = ig.get_100m_vilnius_pop(lon, lat, from_date, to_date, diameter, scale)
     lithunia_pop, lithuania_pop_bands = ig.get_1000m_lithuania_pop(lon, lat, from_date, to_date, diameter, scale)
     
-    np_image_show(np.log(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B4', 'B3', 'B2']) + 1))
-    np_image_show(np.log(np_image_get_bands(viirs_img, viirs_bands, ['avg_rad']) + 1))
-    np_image_show(np.log(np_image_get_bands(vilnius_pop_den, vilnius_pop_den_bands, ['first']) + 1))
-    np_image_show(np.log(np_image_get_bands(lithunia_pop, lithuania_pop_bands, ['first']) + 1))
+    np_image_show(np.log(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B4', 'B3', 'B2']) + 1), title = f"Log-transformed RGB image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "log_rgb_vilnius_132_2021")
+    np_image_show(np.log(np_image_get_bands(viirs_img, viirs_bands, ['avg_rad']) + 1), title = f"Log-transformed average radiance image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "log_radiance_vilnius_132_2021")
+    np_image_show(np.log(np_image_get_bands(vilnius_pop_den, vilnius_pop_den_bands, ['first']) + 1), title = f"Log-transformed population dencity per 100 $m^2$ image of {name}{resol_text}\nPeriod: Unknown", width_cm=plt_width, name = "log_pop_den_vilnius_132_2021")
+    np_image_show(np.log(np_image_get_bands(lithunia_pop, lithuania_pop_bands, ['first']) + 1), title = f"Log-transformed population count per 1000 $m^2$ image of {name}{resol_text}\nPeriod: 2021", width_cm=plt_width, name = "log_pop_count_vilnius_132_2021")
         
     # True color
-    np_image_show(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B4', 'B3', 'B2']))
+    np_image_show(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B4', 'B3', 'B2']), title = f"True color image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "rgb_vilnius_132_2021")
     # False color (urban)
-    np_image_show(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B12', 'B11', 'B4']))
+    np_image_show(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B12', 'B11', 'B4']), title = f"False color (urban) image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "false_col_urban_vilnius_132_2021")
     # NDVI
     tmp = np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B8', 'B4'])
-    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]))
+    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]), title = f"NDVI image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "ndvi_vilnius_132_2021")
     # Moisture index
     tmp = np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B8', 'B11'])
-    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]))
+    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]), title = f"Moisture index image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "moisture_vilnius_132_2021")
     # SWIR
-    np_image_show(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B12', 'B8A', 'B4']))
+    np_image_show(np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B12', 'B8A', 'B4']), title = f"SWIR image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "swir_vilnius_132_2021")
     # NDWI
     tmp = np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B3', 'B8'])
-    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]))
+    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]), title = f"NDWI image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "ndwi_vilnius_132_2021")
     # NDSI
     tmp = np_image_get_bands(sentinel_2_img, sentinel_2_bands, ['B3', 'B11'])
-    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]))
+    np_image_show((tmp[:,:,0] - tmp[:,:,1]) / (tmp[:,:,0] + tmp[:,:,1]), title = f"NDSI image of {name}{resol_text}{perio_text}", width_cm=plt_width, name = "ndsi_vilnius_132_2021")
     
     geoportal_img, geoportal_img_bands = ig.get_geoportal(lon, lat, '2021-2023', diameter, f'{scale}m')
-    np_image_show(np_image_get_bands(geoportal_img, geoportal_img_bands, ['R', 'G', 'B']))
+    np_image_show(np_image_get_bands(geoportal_img, geoportal_img_bands, ['R', 'G', 'B']), title = f"RGB image of {name} from geoportal{resol_text}\nPeriod: from 2021 to 2023", width_cm=plt_width, name = "geoportal_vilnius_132_2021")
     
